@@ -1,8 +1,15 @@
+let env = process.env.NODE_ENV || 'develpoment'
+
+if(env==='development'){
+    process.env.port = 3000
+}
+
 let express = require('express')
 let bodyParser = require('body-parser')
 const {ObjectID} = require('mongodb')
-
 let {mongoose} = require('./db/mongoose')
+const _ = require('lodash')
+
 let {ToDo} = require ('./models/todo')
 let {User} = require('./models/user')
 
@@ -41,7 +48,7 @@ app.get('/todos/:id',(req,res)=>{
         .catch(error=>res.send(error))
 })
 
-app.delete('/delete/:id',(req,res)=>{
+app.delete('/todos/:id',(req,res)=>{
     if(!ObjectID.isValid(req.params.id)){
         res.status(400).send("Id Not Valid")
     }else{
@@ -53,6 +60,29 @@ app.delete('/delete/:id',(req,res)=>{
             })
             .catch(error=>res.send(error))
     }
+})
+
+app.patch('/todos/:id',(req,res)=>{
+    let id = req.params.id;
+    let body = _.pick(req.body,['text','completed'])
+    if(!ObjectID.isValid(id)){
+        res.status(400).send("Id not valid")
+    }
+
+    if(_.isBoolean(req.body.completed) && req.body.completed){
+        body.completedAt = new Date().getTime();
+    }else{
+        body.completed=false
+        body.completedAt = null
+    }
+
+    ToDo.findByIdAndUpdate(id,{$set:body},{new:true})
+        .then((data)=>{
+            if(!data){
+                res.status(400).send("No Todos Found")
+            }else res.send({data})
+        })
+        .catch(error=>res.status(404).send(error))
 })
 
 app.listen(port,()=>{

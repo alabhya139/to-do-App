@@ -1,8 +1,20 @@
 let mongoose = require('mongoose')
 
-mongoose.Promise = global.Promise
+let env = process.env.NODE_ENV || 'develpoment'
 
-mongoose.connect('mongodb://alabhya:iwanna143@ds115664.mlab.com:15664/to-do',{useNewUrlParser:true})
+console.log(env)
+
+mongoose.Promise = global.Promise
+if(!env==='development'){
+    dbURI = 'mongodb://alabhya:iwanna143@ds115664.mlab.com:15664/to-do'
+    mongoose.connect(dbURI,{useNewUrlParser:true})
+}else{
+    dbURI = 'mongodb://localhost:27017/toDoApp'
+    mongoose.connect(dbURI,{useNewUrlParser:true})
+}
+
+
+
 
 module.exports ={
     mongoose
