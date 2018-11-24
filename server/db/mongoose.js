@@ -1,6 +1,6 @@
 let mongoose = require('mongoose')
 
-let env = process.env.NODE_ENV || 'develpoment'
+let env = process.env.NODE_ENV || 'development'
 
 console.log(env)
 
