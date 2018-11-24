@@ -9,6 +9,8 @@ let {User} = require('./models/user')
 
 let app = express()
 
+const port = process.env.PORT || 3000
+
 app.use(bodyParser.json())
 
 app.post('/todos',(req,res)=>{
@@ -39,6 +41,6 @@ app.get('/todos/:id',(req,res)=>{
         .catch(error=>res.send(error))
 })
 
-app.listen('3000',()=>{
-    console.log("Server Up and running on port 3000")
+app.listen(port,()=>{
+    console.log(`Server Up and running on port ${port}`)
 })
