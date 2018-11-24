@@ -41,6 +41,20 @@ app.get('/todos/:id',(req,res)=>{
         .catch(error=>res.send(error))
 })
 
+app.delete('/delete/:id',(req,res)=>{
+    if(!ObjectID.isValid(req.params.id)){
+        res.status(400).send("Id Not Valid")
+    }else{
+        ToDo.findByIdAndDelete(req.params.id)
+            .then(data=>{
+                if(!data){
+                    res.status(404).send("No todos found!")
+                }else res.send({data})
+            })
+            .catch(error=>res.send(error))
+    }
+})
+
 app.listen(port,()=>{
     console.log(`Server Up and running on port ${port}`)
 })
