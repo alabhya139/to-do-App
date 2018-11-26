@@ -12,6 +12,7 @@ const _ = require('lodash')
 
 let {ToDo} = require ('./models/todo')
 let {User} = require('./models/user')
+let {authenticate} = require('./middlewares/authenticate')
 
 
 let app = express()
@@ -83,6 +84,20 @@ app.patch('/todos/:id',(req,res)=>{
             }else res.send({data})
         })
         .catch(error=>res.status(404).send(error))
+})
+
+app.post('/user',(req,res)=>{
+    let body = _.pick(req.body,['name','email'])
+    let user = new User(body)
+    user.save().then(()=>{
+        return user.generateAuthToken()
+    }).then((token)=>{
+        res.header('x-auth',token).send(user)
+    }).catch(e=>res.send(e))
+})
+
+app.get('/user/me',authenticate,(req,res)=>{
+    res.send(req.user)
 })
 
 app.listen(port,()=>{
